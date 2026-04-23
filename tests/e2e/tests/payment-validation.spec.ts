@@ -18,7 +18,9 @@ test.beforeAll(async () => {
   const ctx = await requestFactory.newContext();
   try {
     const res = await new ProductsApi(ctx, env.apiBaseURL).list();
-    productA = res.products![0]!.id;
+    productA = res.products?.[0]?.id ?? productA;
+  } catch (e) {
+    console.warn('[beforeAll] ProductsApi.list() failed, using fallback id:', e);
   } finally {
     await ctx.dispose();
   }

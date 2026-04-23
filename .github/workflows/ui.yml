@@ -45,7 +45,7 @@ jobs:
         env:
           CI: 'true'
           BASE_URL: ${{ vars.BASE_URL || 'https://automationexercise.com' }}
-          API_BASE_URL: ${{ vars.API_BASE_URL || 'https://automationexercise.com' }}
+          API_BASE_URL: ${{ vars.API_BASE_URL || 'https://automationexercise.com/api' }}
           TEST_USER_EMAIL: ${{ vars.TEST_USER_EMAIL }}
           TEST_USER_PASSWORD: ${{ vars.TEST_USER_PASSWORD }}
 
