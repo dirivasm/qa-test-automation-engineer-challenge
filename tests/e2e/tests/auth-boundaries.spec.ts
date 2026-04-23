@@ -3,6 +3,8 @@ import { request as requestFactory } from '@playwright/test';
 import { ProductsApi } from '@utils/ProductsApi';
 import { env } from '@utils/env';
 
+const hasCredentials = !!(process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD);
+
 /**
  * Authentication boundary tests (UI-09, UI-10).
  *
@@ -59,6 +61,9 @@ test.describe('Shop — auth boundaries', () => {
       cartPage,
       header,
     }) => {
+      // This test requires credentials to log in — skip when not configured.
+      test.skip(!hasCredentials, 'TEST_USER_EMAIL / TEST_USER_PASSWORD not set');
+
       // Log in freshly inside this isolated context.
       await loginPage.goto();
       await loginPage.login(env.user.email, env.user.password);
