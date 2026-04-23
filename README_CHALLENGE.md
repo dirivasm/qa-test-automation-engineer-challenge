@@ -98,8 +98,17 @@ npm run report
 
 **Environment variables** (see `.env.example`):
 
-- `BASE_URL` — defaults to `https://automationexercise.com`
-- `API_BASE_URL` — defaults to `https://automationexercise.com/api`
+| Variable | Default | Required |
+| --- | --- | --- |
+| `BASE_URL` | `https://automationexercise.com` | No |
+| `API_BASE_URL` | `https://automationexercise.com/api` | No |
+| `TEST_USER_EMAIL` | — | Yes (authenticated flows) |
+| `TEST_USER_PASSWORD` | — | Yes (authenticated flows) |
+| `TEST_USER_NAME` | `NanLabs QA` | No |
+
+Copy `.env.example` to `.env` and fill in `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` with a valid [automationexercise.com](https://automationexercise.com) account before running login-dependent tests.
+
+> **Ideal world — CI secrets:** In a production CI setup these credentials would be stored as **GitHub Actions repository secrets** (`Settings → Secrets and variables → Actions`) and injected at runtime — never committed to the repo. The workflow already references them as `${{ secrets.TEST_USER_EMAIL }}` and `${{ secrets.TEST_USER_PASSWORD }}` for exactly that reason. For this challenge submission they are kept in a local `.env` file (gitignored) to keep setup simple.
 
 ---
 
