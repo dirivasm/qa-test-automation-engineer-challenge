@@ -8,7 +8,8 @@ const PROJECT_ROOT = path.resolve(__dirname, '..', '..', '..');
 dotenv.config({ path: path.join(PROJECT_ROOT, '.env') });
 
 function required(name: string, fallback?: string): string {
-  const value = process.env[name] ?? fallback;
+  // Use || so empty strings passed by CI (unset vars) fall through to the error.
+  const value = process.env[name] || fallback;
   if (!value) {
     throw new Error(`Missing required environment variable: ${name}`);
   }
@@ -18,11 +19,16 @@ function required(name: string, fallback?: string): string {
 export const env = {
   baseURL: required('BASE_URL', 'https://automationexercise.com'),
   apiBaseURL: required('API_BASE_URL', 'https://automationexercise.com/api'),
-  user: {
-    email: required('TEST_USER_EMAIL'),
-    password: required('TEST_USER_PASSWORD'),
-    name: required('TEST_USER_NAME', 'NanLabs QA'),
+  // Lazy getter — resolved only when accessed inside a running test, NOT at
+  // module-import time. Prevents a collection-time crash when credentials are
+  // absent (CI without vars configured).
+  get user() {
+    return {
+      email: required('TEST_USER_EMAIL'),
+      password: required('TEST_USER_PASSWORD'),
+      name: required('TEST_USER_NAME', 'NanLabs QA'),
+    };
   },
-} as const;
+};
 
 export const STORAGE_STATE_PATH = 'tests/e2e/.auth/user.json';

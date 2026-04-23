@@ -23,6 +23,16 @@ import { LoginPage } from '@pages/LoginPage';
  * browser projects (see `playwright.config.ts`).
  */
 setup('authenticate', async ({ page, request }) => {
+  // Skip gracefully when credentials are not configured (CI without vars set).
+  // Write an empty storageState so dependent browser projects can initialise.
+  const hasCredentials = !!(process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD);
+  if (!hasCredentials) {
+    const dir = path.dirname(STORAGE_STATE_PATH);
+    if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(STORAGE_STATE_PATH, JSON.stringify({ cookies: [], origins: [] }));
+  }
+  setup.skip(!hasCredentials, 'TEST_USER_EMAIL / TEST_USER_PASSWORD not set — skipping auth setup');
+
   const { email, password, name } = env.user;
   const api = new AuthApi(request, env.apiBaseURL);
 
