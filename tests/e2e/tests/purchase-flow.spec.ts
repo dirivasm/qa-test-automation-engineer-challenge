@@ -4,8 +4,6 @@ import { ProductsApi } from '@utils/ProductsApi';
 import { env } from '@utils/env';
 import { FAKE_CARD } from '@data/cards';
 
-const hasCredentials = !!(process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD);
-
 /**
  * Purchase flow — browse, add to cart, checkout, place order (UI-01, UI-02, UI-04).
  *
@@ -37,7 +35,6 @@ test.beforeAll(async () => {
 
 test.describe('Shop — happy path @p0', () => {
   test.beforeEach(async ({ cartPage }) => {
-    test.skip(!hasCredentials, 'Checkout requires an authenticated session — TEST_USER_EMAIL / TEST_USER_PASSWORD not set');
     await cartPage.clearAll();
   });
 

@@ -4,8 +4,6 @@ import { ProductsApi } from '@utils/ProductsApi';
 import { env } from '@utils/env';
 import { EMPTY_CARD, INVALID_EXPIRY_MONTH, NON_NUMERIC_CARD } from '@data/cards';
 
-const hasCredentials = !!(process.env.TEST_USER_EMAIL && process.env.TEST_USER_PASSWORD);
-
 /**
  * Payment-form validation (UI-11, UI-12, UI-13).
  *
@@ -30,7 +28,6 @@ test.beforeAll(async () => {
 
 test.describe('Shop — payment validation', () => {
   test.beforeEach(async ({ productsPage, cartPage, checkoutPage, paymentPage }) => {
-    test.skip(!hasCredentials, 'Checkout requires an authenticated session — TEST_USER_EMAIL / TEST_USER_PASSWORD not set');
     await cartPage.clearAll();
     await productsPage.goto();
     await productsPage.addProductToCart(productA);

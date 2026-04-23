@@ -44,10 +44,11 @@ jobs:
         run: npx playwright test --project=setup --project=chromium
         env:
           CI: 'true'
-          BASE_URL: ${{ vars.BASE_URL || 'https://automationexercise.com' }}
-          API_BASE_URL: ${{ vars.API_BASE_URL || 'https://automationexercise.com/api' }}
-          TEST_USER_EMAIL: ${{ vars.TEST_USER_EMAIL }}
-          TEST_USER_PASSWORD: ${{ vars.TEST_USER_PASSWORD }}
+          BASE_URL: https://automationexercise.com
+          API_BASE_URL: https://automationexercise.com/api
+          TEST_USER_EMAIL: nanlabsqa@test.com
+          TEST_USER_PASSWORD: Test@12345
+          TEST_USER_NAME: NanLabs QA
 
       - name: Upload HTML report artifact
         if: always()
