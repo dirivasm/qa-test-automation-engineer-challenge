@@ -3,7 +3,6 @@ name: UI Tests
 # Runs the full UI suite on Chromium on every push / PR and on manual trigger.
 on:
   push:
-    branches: [main]
     paths:
       - 'tests/e2e/**'
       - '!tests/e2e/api/**'
@@ -11,7 +10,6 @@ on:
       - 'package*.json'
       - '.github/workflows/ui.yml'
   pull_request:
-    branches: [main]
     paths:
       - 'tests/e2e/**'
       - '!tests/e2e/api/**'
@@ -19,15 +17,6 @@ on:
       - 'package*.json'
       - '.github/workflows/ui.yml'
   workflow_dispatch:
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: ui-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   # ── 1. Run the UI suite on Chromium ──────────────────────────────────────
