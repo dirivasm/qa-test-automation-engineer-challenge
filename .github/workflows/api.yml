@@ -4,7 +4,6 @@ name: API Tests
 # relevant source files, and can always be triggered manually.
 on:
   push:
-    branches: [main]
     paths:
       - 'tests/e2e/api/**'
       - 'tests/e2e/utils/**'
@@ -13,7 +12,6 @@ on:
       - 'package*.json'
       - '.github/workflows/api.yml'
   pull_request:
-    branches: [main]
     paths:
       - 'tests/e2e/api/**'
       - 'tests/e2e/utils/**'

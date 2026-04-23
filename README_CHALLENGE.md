@@ -108,14 +108,17 @@ npm run report
 
 Copy `.env.example` to `.env` and fill in `TEST_USER_EMAIL` and `TEST_USER_PASSWORD` with a valid [automationexercise.com](https://automationexercise.com) account before running login-dependent tests.
 
-> **Ideal world — CI secrets:** In a production CI setup these credentials would be stored as **GitHub Actions repository secrets** (`Settings → Secrets and variables → Actions`) and injected at runtime — never committed to the repo. The workflow already references them as `${{ secrets.TEST_USER_EMAIL }}` and `${{ secrets.TEST_USER_PASSWORD }}` for exactly that reason. For this challenge submission they are kept in a local `.env` file (gitignored) to keep setup simple.
+> **Why credentials are hardcoded in CI — and why that's intentional for this challenge:**
+> `automationexercise.com` is a **public test sandbox** with no real user data. The credentials (`nanlabsqa@test.com` / `Test@12345`) are committed directly into the workflow files so the CI suite is fully self-contained and any reviewer can run it from a fork without configuring any repository settings.
+>
+> **In an ideal / production world these would be GitHub Actions secrets.** Credentials would be stored under `Settings → Secrets and variables → Actions` and referenced as `${{ secrets.TEST_USER_EMAIL }}` and `${{ secrets.TEST_USER_PASSWORD }}` — never hard-coded in source. Committing real credentials to a repository is a critical security risk (OWASP A02 — Cryptographic / Credential exposure) and would be caught immediately by secret-scanning tools. The only reason it is acceptable here is that the target site is a throw-away public sandbox with zero sensitive data.
 
 ---
 
 ## 📐 Assumptions & Tradeoffs
 
 - The public API is **shared and stateful** — tests create uniquely-named accounts/products to avoid collisions, and are written to be idempotent where possible.
-- No secrets are required to run the suite; CI does not need protected credentials.
+- Credentials are hardcoded in the workflow files for reviewer convenience (public sandbox only — see note above).
 - I did **not** fork-and-PR against the upstream repo inside this commit — forking is a GitHub-side operation. The branch `feat/playwright-automationexercise` is ready to be pushed and opened as a PR against the fork.
 
 ---
