@@ -1,0 +1,80 @@
+name: API Tests
+
+# Runs the browser-free API contract suite on every push / PR that touches
+# relevant source files, and can always be triggered manually.
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tests/e2e/api/**'
+      - 'tests/e2e/utils/**'
+      - 'tests/e2e/fixtures/**'
+      - 'playwright.config.ts'
+      - 'package*.json'
+      - '.github/workflows/api.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/e2e/api/**'
+      - 'tests/e2e/utils/**'
+      - 'tests/e2e/fixtures/**'
+      - 'playwright.config.ts'
+      - 'package*.json'
+      - '.github/workflows/api.yml'
+  workflow_dispatch:
+
+# Required to deploy the HTML report to GitHub Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Cancel an in-progress run of the same workflow on the same ref to save
+# runner minutes when commits are pushed in quick succession.
+concurrency:
+  group: api-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── 1. Run the API suite ──────────────────────────────────────────────────
+  run:
+    name: API test suite
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run API tests
+        run: npx playwright test --project=api
+        env:
+          CI: 'true'
+          BASE_URL: ${{ vars.BASE_URL || 'https://automationexercise.com' }}
+          API_BASE_URL: ${{ vars.API_BASE_URL || 'https://automationexercise.com' }}
+          TEST_USER_EMAIL: ${{ secrets.TEST_USER_EMAIL }}
+          TEST_USER_PASSWORD: ${{ secrets.TEST_USER_PASSWORD }}
+
+      # Always upload the HTML report so it is accessible even on failure.
+      - name: Upload HTML report artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: api-playwright-report
+          path: playwright-report/
+          retention-days: 30
+
+      # Stage the report for Pages deployment in the next job.
+      - name: Prepare Pages artifact
+        if: always()
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: playwright-report/

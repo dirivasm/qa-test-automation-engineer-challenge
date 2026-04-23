@@ -88,9 +88,6 @@ npm test
 
 # Or run a specific browser / device
 npm run test:chromium
-npm run test:firefox
-npm run test:webkit
-npm run test:mobile
 
 # Interactive UI mode (great for debugging)
 npm run test:ui
@@ -103,48 +100,6 @@ npm run report
 
 - `BASE_URL` — defaults to `https://automationexercise.com`
 - `API_BASE_URL` — defaults to `https://automationexercise.com/api`
-
----
-
-## ✅ What the Suite Will Cover
-
-> Specs are being added iteratively. This section tracks **planned** coverage; see [docs/TESTING_PLAN.md](./docs/TESTING_PLAN.md) for the full plan.
-
-**UI flows (planned):**
-
-- Sign up → verify account created → delete account (full account lifecycle).
-- Login with valid / invalid credentials.
-- Session reuse via `storageState` (logged-in fixture).
-- Product search + category / brand filtering.
-- Add-to-cart → checkout → place order (happy path).
-- Contact Us form submission (file upload, success message).
-- Newsletter subscription.
-
-**API flows (planned):**
-
-- `GET /productsList` — schema + non-empty payload.
-- `GET /brandsList` — schema sanity.
-- `POST /searchProduct` — results match query / empty-body validation.
-- `POST /verifyLogin` — valid / invalid / missing-email negative cases.
-- `POST /createAccount` + `DELETE /deleteAccount` — full lifecycle.
-
-**Cross-cutting:**
-
-- Desktop + mobile viewport execution on every spec tagged `@responsive`.
-- Trace + video + screenshot captured on failure for fast triage.
-- Basic accessibility smoke (page title, landmark roles) on key pages.
-
----
-
-## 🔭 What I Would Improve With More Time
-
-- **Visual regression** snapshots on key pages (Playwright’s built-in `toHaveScreenshot`).
-- **Accessibility** audits via `@axe-core/playwright` on critical flows.
-- **Test data isolation:** unique email generator per run + periodic cleanup of created accounts via the API.
-- **Sharding** across CI runners for faster feedback on large suites.
-- **Allure or Playwright Merge Reports** for richer historical dashboards.
-- **Contract tests** against the public API with schema validation (e.g. `zod` / `ajv`).
-- **Flake quarantine** workflow: auto-tag flaky tests and route them to a separate non-blocking job.
 
 ---
 
@@ -163,8 +118,4 @@ This repo is set up so humans and AI agents can collaborate safely:
 - Playwright **MCP server** is pre-configured in [.vscode/mcp.json](./.vscode/mcp.json) so agents can drive a real browser to explore selectors and flows.
 - Repo conventions, do/don’t lists, and safe-action policy live in [docs/AI_COLLABORATION.md](./docs/AI_COLLABORATION.md).
 
----
 
-## 🏁 Status
-
-✅ Project scaffolded · ✅ CI wired · 🟡 E2E flows being added iteratively.

@@ -1,113 +1,125 @@
-# 🧪 QA / Test Automation Engineer Challenge – Choose Your Test
+# automationexercise.com — E2E Test Suite
 
-Welcome to the **QA / Test Automation Engineer Challenge!** 🔍🧼
-This challenge is designed to evaluate your ability to test modern web applications with a strong focus on **automation, coverage, and clarity**.
+End-to-end + API test suite for [automationexercise.com](https://automationexercise.com), built with
+**Playwright Test + TypeScript** using the Page Object Model.
 
-## 🎯 Context
+The original challenge brief lives in [README_CHALLENGE.md](README_CHALLENGE.md).
+The test strategy (scope, risks, matrix) lives in [docs/TESTING_PLAN.md](docs/TESTING_PLAN.md).
+Notes on how AI was used during this work are in [docs/AI_COLLABORATION.md](docs/AI_COLLABORATION.md).
 
-At NaNLABS, we believe **quality is a shared responsibility**—but we count on QA engineers to lead the way. We want to see how you approach building a **realistic and maintainable test strategy**, especially in modern JavaScript environments.
+## What is covered
 
-Your task is to **design and implement an end-to-end test suite** using a tool like **Cypress** (preferred) to automate UI and API flows. You’ll be working with a real or realistic frontend page and API.
+| Layer | Cases |
+|-------|-------|
+| UI    | UI-01…UI-16 — happy path, cart state, auth boundaries, payment validation, order confirmation |
+| API   | API-01…API-07 — products list, search, user detail, login negative / positive, account create/delete |
 
----
+`@p0` marks the critical path. `@responsive` marks cases replayed on mobile + tablet viewports.
 
-## 🕹 Choose Your Page to Test
+## Project layout
 
-You may test **any of the following public pages**. Choose one and briefly explain why you picked it.
-
-### ✅ Suggested Test Pages
-
-Choose a known test site such as:
-
-- [https://demoqa.com](https://demoqa.com)
-- [https://the-internet.herokuapp.com](https://the-internet.herokuapp.com)
-- [https://automationexercise.com](https://automationexercise.com)
-
-Focus on testing a **specific user flow** (e.g., form submission, login process, navigation, or data filtering) using **Cypress or another modern test automation framework**.
-
-> [!NOTE]
-> You can choose a different public test site if you prefer—just make sure it’s stable, accessible, and has a clear user flow to automate.
-
----
-
-## 📦 Deliverables
-
-> 📥 **Your submission must be a Pull Request that includes:**
-
-- A folder with your automated test suite.
-- A `README.md` that describes:
-
-  - What tool you used and why.
-  - How to run the tests locally.
-  - What the tests cover and what could be improved with more time.
-
-- Bonus (if API testing): include a few **Postman**, **Swagger**, or **Cypress API tests** that complement your UI flows.
-- Bonus (if exploratory): include an optional **manual test plan or checklist** with potential corner cases or exploratory notes.
-
-> [!TIP]
-> You may use GitHub Actions or other CI tools to show test automation in action, but this is not required.
-
-## 🧪 Suggested Folder Structure
-
-```txt
-/
-├── .github/
-│   └── workflows/
-├── tests/
-│   └── e2e/
-│       └── [your_test_file].spec.js
-├── docs/
-│   └── TESTING_PLAN.md (optional)
-├── cypress.config.js (if using Cypress)
-├── README.md
-└── ...
+```
+tests/e2e/
+  api/           # API-only specs (run as its own project)
+  tests/         # UI specs, grouped by concern
+  pages/         # Page Objects (BasePage + one class per screen)
+  fixtures/      # Playwright `test` fixture extended with POMs + API clients
+  utils/         # Env loader, AuthApi, ProductsApi
+  data/          # Static test data (cards, …)
+  .auth/         # Storage state written by the `setup` project (git-ignored)
 ```
 
-## 🌟 Nice to Have
+## Setup
 
-> 💡 **Bonus Points For:**
+```bash
+npm install
+npx playwright install
+cp .env.example .env   # then fill in TEST_USER_EMAIL / TEST_USER_PASSWORD
+```
 
-- Testing across **multiple screen sizes** or devices (mobile, tablet, desktop).
-- Including **edge cases and failure handling** in your tests.
-- Including **basic test coverage metrics**.
-- Including **Postman or Swagger** examples for REST API validation.
-- Using **GitHub Actions or any CI** to run the tests on pull request.
-- Including tests that validate behavior after state changes or updates (e.g., after clicking a button, submitting a form).
+The `.env` file must define a pre-existing account on automationexercise.com:
 
-> [!TIP]
-> Want extra inspiration? Check out our **[Awesome NaNLABS repository](https://github.com/nanlabs/awesome-nan)** for tips on structure, testing tools, and automation examples.
+```dotenv
+BASE_URL=https://automationexercise.com
+API_BASE_URL=https://automationexercise.com
+TEST_USER_EMAIL=...
+TEST_USER_PASSWORD=...
+```
 
-## 🧪 Submission Guidelines
+The `setup` project logs in once and stores the authenticated state in
+`tests/e2e/.auth/user.json`, which every UI project reuses.
 
-> 📌 **Follow these steps to submit your solution:**
+## Running the tests
 
-1. **Fork this repository.**
-2. **Create a feature branch** with your test suite.
-3. **Commit your changes** with clear messages.
-4. **Open a Pull Request** following the provided template.
-5. **We’ll review and provide feedback.**
+| Command | What it runs |
+|---------|--------------|
+| `npm test` | Everything: `setup` + `api` + all browser projects |
+| `npm run test:api` | API suite only (no browser) |
+| `npm run test:chromium` | UI suite on Chromium (depends on `setup`) |
+| `npm run test:firefox` | UI suite on Firefox |
+| `npm run test:webkit` | UI suite on WebKit |
+| `npm run test:mobile` | `@responsive` cases on Pixel 7 |
+| `npm run test:tablet` | `@responsive` cases on iPad Pro 11 |
+| `npm run test:responsive` | Mobile + tablet `@responsive` cases |
+| `npm run test:p0` | Critical-path (`@p0`) cases only |
+| `npm run test:headed` | Any selection, headed browser |
+| `npm run test:ui` | Playwright UI Mode |
+| `npm run test:debug` | Playwright Inspector |
+| `npm run report` | Open the last HTML report |
+| `npm run codegen` | Launch Playwright Codegen against the site |
+| `npm run typecheck` | `tsc --noEmit` |
+| `npm run lint` | ESLint |
 
-## ✅ Evaluation Criteria
+You can always fall back to the Playwright CLI directly, e.g.:
 
-> 🔍 **What we’ll be looking at:**
+```bash
+npx playwright test --project=chromium -g "UI-01"
+npx playwright test --project=api      -g "API-04"
+npx playwright test --grep @p0
+```
 
-- Coverage and clarity of your test strategy.
-- Use of best practices in test structure and tool usage.
-- Automation quality and ability to debug failing tests.
-- Clarity of README and instructions.
-- Proactive mindset: testing for edge cases, unexpected inputs, and accessibility.
+## Design notes
 
-## 💬 Final Notes
+- **POM everywhere.** Every screen is a class in `tests/e2e/pages/` extending
+  `BasePage`. Specs never touch raw selectors.
+- **Robust locators.** Role-based (`getByRole`), `data-qa` test ids
+  (`testIdAttribute: 'data-qa'`), and href-scoped anchors inside
+  `#header` to avoid duplicates with the breadcrumb bar.
+- **Deterministic cart actions.** Add-to-cart is fired via `evaluate(el =>
+  el.click())` because the site's overlay only appears on `:hover`; we then
+  wait explicitly for `#cartModal` to become visible.
+- **Serial by design.** `workers: 1`, `fullyParallel: false` — the suite
+  shares a single live account on a real site, so tests run in order and
+  each cart test starts with `cartPage.clearAll()`.
+- **Isolated logout.** UI-10 uses its own empty storage state so logging
+  out never invalidates the session reused by the rest of the suite.
+- **Anonymous check.** UI-09 also uses empty storage state to exercise the
+  guest-checkout prompt.
+- **API idiom.** automationexercise.com always returns HTTP 200; our API
+  client parses the JSON body and asserts on `responseCode` / `message`.
 
-> [!TIP]
-> Don’t overthink it—we care more about how you think than about perfection!
+## CI / CD
 
-A few tips:
+Two GitHub Actions workflows live in [.github/workflows/](.github/workflows/):
 
-- Pick something you're comfortable with or excited to try.
-- Make your tests easy to read, run, and maintain.
-- Call out assumptions or tradeoffs in your README.
+| Workflow | File | Trigger | What it does |
+|----------|------|---------|--------------|
+| **API Tests** | `api.yml` | push / PR to `main` touching `api/**` or config files | Runs `--project=api` in a single job and publishes the HTML report to GitHub Pages |
+| **UI Tests** | `ui.yml` | push / PR to `main` touching `tests/**` or config files | Runs setup + all browser/responsive projects in parallel (matrix), merges the per-browser blob reports into one HTML report, and publishes it to GitHub Pages |
 
-## 🏁 Good luck and happy testing
+Both workflows can also be triggered manually from the Actions tab (`workflow_dispatch`).
 
-If you have any questions, don’t hesitate to reach out. 🧪💬
+### Required repository secrets
+
+Go to **Settings → Secrets and variables → Actions** and add:
+
+| Secret | Value |
+|--------|-------|
+| `TEST_USER_EMAIL` | Email of the test account on automationexercise.com |
+| `TEST_USER_PASSWORD` | Password for that account |
+
+`BASE_URL` and `API_BASE_URL` default to `https://automationexercise.com` and can be overridden as repository variables if needed.
+
+### Enabling GitHub Pages
+
+Go to **Settings → Pages**, set *Source* to **GitHub Actions**. After the first successful run the report URL will appear as the environment link on the workflow summary page.

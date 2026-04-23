@@ -10,6 +10,9 @@ dist/
 .env.local
 .env.*.local
 
+# Auth state captured during global setup
+tests/e2e/.auth/
+
 # OS / Editor
 .DS_Store
 .idea/

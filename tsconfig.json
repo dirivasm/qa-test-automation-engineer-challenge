@@ -1,20 +1,19 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "commonjs",
+    "module": "ESNext",
     "lib": ["ES2022", "DOM"],
     "strict": true,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node",
-    "baseUrl": ".",
+    "moduleResolution": "bundler",
     "paths": {
-      "@pages/*": ["tests/e2e/pages/*"],
-      "@fixtures/*": ["tests/e2e/fixtures/*"],
-      "@utils/*": ["tests/e2e/utils/*"],
-      "@data/*": ["tests/e2e/data/*"]
+      "@pages/*": ["./tests/e2e/pages/*"],
+      "@fixtures/*": ["./tests/e2e/fixtures/*"],
+      "@utils/*": ["./tests/e2e/utils/*"],
+      "@data/*": ["./tests/e2e/data/*"]
     },
     "types": ["node", "@playwright/test"]
   },
